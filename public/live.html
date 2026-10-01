@@ -1,0 +1,25 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Alpha Engine · Live paper book</title>
+<style>
+:root{--bg:#0b0f17;--fg:#e6edf7;--mut:#8aa0bd;--card:#121a28;--ok:#3ddc97;--bad:#ff6b6b}
+@media(prefers-color-scheme:light){:root{--bg:#f4f7fb;--fg:#0b1220;--mut:#51627a;--card:#fff}}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,sans-serif;padding:16px}
+main{max-width:960px;margin:auto}a{color:var(--ok)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.k{background:var(--card);border-radius:12px;padding:12px}.k b{display:block;font-size:20px}.k span{color:var(--mut);font-size:12px}
+table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}td,th{padding:6px;border-bottom:1px solid #8883;text-align:left}
+.tablewrap{overflow-x:auto}.err{color:var(--bad)}
+</style></head><body><main>
+<h1>Live paper book</h1>
+<p><a href="/">← Console</a> · Paper trading only. No real orders, no keys for any exchange.</p>
+<div id="kpis" class="grid"></div><p id="msg"></p>
+<h2>Recent decisions</h2><div class="tablewrap"><table id="dec"></table></div>
+<script>
+const f=(n,d=2)=>Number(n).toFixed(d);
+fetch('/api/state').then(r=>r.ok?r.json():Promise.reject(r.status+' '+r.statusText)).then(s=>{
+ const k=[['Equity (at cost)','$'+f(s.equity_at_cost)],['Cash','$'+f(s.cash)],['Exposure','$'+f(s.exposure)],['Realized P&L','$'+f(s.realized_pnl)],['Open positions',s.open_positions],['Kill switch',s.killed?'ON':'off']];
+ document.getElementById('kpis').innerHTML=k.map(([a,b])=>`<div class="k"><span>${a}</span><b>${b}</b></div>`).join('');
+ const rows=s.decisions.map(d=>`<tr><td>${d.market_id}</td><td>${d.side}</td><td>${f(d.price,3)}</td><td>${f(d.prob,3)}</td><td>${f(d.edge,3)}</td><td>$${f(d.stake)}</td><td>${d.approved?'approved':d.reason}</td></tr>`).join('');
+ document.getElementById('dec').innerHTML='<tr><th>Market</th><th>Side</th><th>Price</th><th>Our p</th><th>Edge</th><th>Stake</th><th>Result</th></tr>'+rows;
+}).catch(e=>{document.getElementById('msg').innerHTML='<span class="err">State unavailable ('+e+'). Check Supabase env vars.</span>'});
+</script></main></body></html>
