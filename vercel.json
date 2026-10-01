@@ -1,5 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "crons": [{ "path": "/api/cron/cycle", "schedule": "0 */6 * * *" }],
+  "crons": [{ "path": "/api/cron/cycle", "schedule": "0 13 * * *" }],
   "functions": { "api/index.py": { "maxDuration": 300 } }
 }
