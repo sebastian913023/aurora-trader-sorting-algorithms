@@ -71,9 +71,8 @@ def test_nearly_sorted_input():
         assert sort_func(data) == expected
 
 
-def test_counting_sort_supports_non_negative_values_only():
-    with pytest.raises(ValueError):
-        counting_sort([-1, 2, 3])
+def test_counting_sort_handles_negative_values_via_offset():
+    assert counting_sort([3, -1, 2, -1]) == [-1, -1, 2, 3]
 
 
 def test_radix_sort_rejects_negative_values():
